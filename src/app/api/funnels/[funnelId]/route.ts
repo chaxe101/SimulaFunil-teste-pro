@@ -1,5 +1,4 @@
 // src/app/api/funnels/[funnelId]/route.ts
-// Este arquivo lida com as operações GET (por ID), PUT e DELETE para um funil específico
 
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
@@ -13,10 +12,14 @@ const funnelUpdateSchema = z.object({
   edges: z.any().optional(),
 });
 
-export async function GET(
-  request: NextRequest,
-  context: { params: { funnelId: string } }
-) {
+type Context = {
+  params: {
+    funnelId: string;
+  };
+};
+
+// GET
+export async function GET(request: NextRequest, context: Context) {
   const { funnelId } = context.params;
 
   const authHeader = request.headers.get("authorization");
@@ -52,18 +55,13 @@ export async function GET(
 
     return NextResponse.json(parsedFunnel, { status: 200 });
   } catch (error) {
-    console.error('Falha ao buscar funil específico no backend:', error);
-    if (error instanceof Error && error.name === 'JWSInvalid') {
-      return NextResponse.json({ error: "Token de autenticação inválido" }, { status: 401 });
-    }
-    return NextResponse.json({ error: 'Falha interna ao buscar funil. Tente novamente mais tarde.' }, { status: 500 });
+    console.error('Erro ao buscar funil:', error);
+    return NextResponse.json({ error: 'Erro interno ao buscar funil.' }, { status: 500 });
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  context: { params: { funnelId: string } }
-) {
+// PUT
+export async function PUT(request: NextRequest, context: Context) {
   const { funnelId } = context.params;
 
   const authHeader = request.headers.get("authorization");
@@ -80,14 +78,7 @@ export async function PUT(
   }
 
   try {
-    let body;
-    try {
-      body = await request.json();
-    } catch (parseError) {
-      console.error('Erro ao analisar o corpo da requisição para PUT /api/funnels/[id]:', parseError);
-      return NextResponse.json({ error: 'Corpo da requisição inválido. Esperado JSON.' }, { status: 400 });
-    }
-
+    const body = await request.json();
     const parsedData = funnelUpdateSchema.safeParse(body);
 
     if (!parsedData.success) {
@@ -130,18 +121,13 @@ export async function PUT(
 
     return NextResponse.json(parsedUpdatedFunnel, { status: 200 });
   } catch (error) {
-    console.error('Falha ao atualizar funil no backend:', error);
-    if (error instanceof Error && error.name === 'JWSInvalid') {
-      return NextResponse.json({ error: "Token de autenticação inválido" }, { status: 401 });
-    }
-    return NextResponse.json({ error: 'Falha interna ao atualizar funil. Tente novamente mais tarde.' }, { status: 500 });
+    console.error('Erro ao atualizar funil:', error);
+    return NextResponse.json({ error: 'Erro interno ao atualizar funil.' }, { status: 500 });
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  context: { params: { funnelId: string } }
-) {
+// DELETE
+export async function DELETE(request: NextRequest, context: Context) {
   const { funnelId } = context.params;
 
   const authHeader = request.headers.get("authorization");
@@ -170,17 +156,12 @@ export async function DELETE(
     }
 
     await prisma.funnel.delete({
-      where: {
-        id: funnelId,
-      },
+      where: { id: funnelId },
     });
 
     return NextResponse.json({ message: 'Funil excluído com sucesso.' }, { status: 200 });
   } catch (error) {
-    console.error('Falha ao excluir funil no backend:', error);
-    if (error instanceof Error && error.name === 'JWSInvalid') {
-      return NextResponse.json({ error: "Token de autenticação inválido" }, { status: 401 });
-    }
-    return NextResponse.json({ error: 'Falha interna ao excluir funil. Tente novamente mais tarde.' }, { status: 500 });
+    console.error('Erro ao excluir funil:', error);
+    return NextResponse.json({ error: 'Erro interno ao excluir funil.' }, { status: 500 });
   }
 }
