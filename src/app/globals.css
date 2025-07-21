@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 347 90% 61%;
+    --primary-foreground: 350 100% 10%;
+    --secondary: 232 100% 71%;
+    --secondary-foreground: 210 17% 98%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 347 90% 61%;
+    --accent-foreground: 350 100% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 347 90% 61%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 224 23% 15%;
+    --foreground: 210 17% 98%;
+    --card: 224 23% 18%;
+    --card-foreground: 210 17% 98%;
+    --popover: 224 23% 15%;
+    --popover-foreground: 210 17% 98%;
+    --primary: 347 90% 61%;
+    --primary-foreground: 210 17% 98%;
+    --secondary: 222 31% 25%;
+    --secondary-foreground: 210 17% 98%;
+    --muted: 224 23% 22%;
+    --muted-foreground: 210 17% 75%;
+    --accent: 347 90% 61%;
+    --accent-foreground: 210 17% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 222 31% 25%;
+    --input: 222 31% 25%;
+    --ring: 347 90% 61%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 224 23% 11%;
+    --sidebar-foreground: 210 17% 75%;
+    --sidebar-primary: 347 90% 61%;
+    --sidebar-primary-foreground: 350 85% 10%;
+    --sidebar-accent: 222 31% 18%;
+    --sidebar-accent-foreground: 210 17% 98%;
+    --sidebar-border: 222 31% 25%;
+    --sidebar-ring: 347 90% 61%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  .react-flow__panel {
+    @apply bg-transparent;
+  }
+}

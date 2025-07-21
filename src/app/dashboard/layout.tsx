@@ -1,0 +1,178 @@
+
+"use client";
+
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  LayoutDashboard,
+  Menu,
+  Settings,
+  User,
+  Crown,
+  Bell,
+  LogOut,
+  Loader2,
+} from "lucide-react";
+import { Logo } from "@/components/logo";
+import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+
+const navItems = [
+  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/dashboard/account", icon: User, label: "Minha Conta" },
+  { href: "/dashboard/plan", icon: Crown, label: "Meu Plano" },
+  { href: "/dashboard/settings", icon: Settings, label: "Configurações" },
+];
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userInitial, setUserInitial] = useState('');
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const email = localStorage.getItem('userEmail');
+
+    if (!token) {
+      router.push('/login');
+    } else {
+      setIsAuthenticated(true);
+      if (email) {
+        setUserInitial(email.charAt(0).toUpperCase());
+      }
+    }
+  }, [router]);
+
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userEmail');
+    toast({ title: "Logout realizado com sucesso!" });
+    router.push('/login');
+  }
+
+  const SidebarNav = ({ className }: { className?: string }) => (
+    <nav className={cn("grid items-start px-4 text-sm font-medium", className)}>
+      {navItems.map((item) => (
+        <Link
+          key={item.label}
+          href={item.href}
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+            pathname === item.href && "bg-muted text-primary"
+          )}
+        >
+          <item.icon className="h-4 w-4" />
+          {item.label}
+        </Link>
+      ))}
+    </nav>
+  );
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
+      <div className="hidden border-r bg-sidebar lg:block">
+        <div className="flex h-full max-h-screen flex-col gap-2">
+          <div className="flex h-[60px] items-center border-b px-6">
+            <Link href="/" className="flex items-center gap-2 font-semibold">
+              <Logo className="h-6 w-6 text-primary" />
+              <span className="font-headline text-xl">SimulaFunil</span>
+            </Link>
+          </div>
+          <div className="flex-1 overflow-auto py-2">
+            <SidebarNav />
+          </div>
+          <div className="mt-auto p-4">
+             <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Sair
+            </Button>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6 lg:h-[60px]">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="shrink-0 lg:hidden">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="bg-sidebar flex flex-col p-0">
+               <div className="flex h-[60px] items-center border-b px-6">
+                <Link href="/" className="flex items-center gap-2 font-semibold">
+                  <Logo className="h-6 w-6 text-primary" />
+                  <span className="font-headline text-xl">SimulaFunil</span>
+                </Link>
+              </div>
+              <SidebarNav className="mt-4" />
+              <div className="mt-auto p-4 border-t border-border/50">
+                <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sair
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
+          <div className="w-full flex-1" />
+           <Button variant="ghost" size="icon" className="rounded-full">
+                <Bell className="h-5 w-5" />
+                <span className="sr-only">Notificações</span>
+              </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Avatar>
+                  <AvatarImage src={''} />
+                  <AvatarFallback>{userInitial}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+               <DropdownMenuItem asChild>
+                 <Link href="/dashboard/settings">Configurações</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/suporte">Suporte</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+               <DropdownMenuItem onClick={handleLogout}>
+                 Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </header>
+        <main className="flex-1 p-4 sm:p-6">{children}</main>
+      </div>
+    </div>
+  );
+}

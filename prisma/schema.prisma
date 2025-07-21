@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  plano     String    @default("free") // free, weekly, monthly, expired
+  expiresAt DateTime? // Novo campo: Data e hora de expiração do plano. Null para Free.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  funnels   Funnel[] // Campo de relação inversa adicionado
+
+  @@map("users") // Recomendo usar 'users' para a tabela
+}
+
+model Funnel {
+  id        String   @id @default(cuid())
+  name      String
+  nodes     String
+  edges     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
